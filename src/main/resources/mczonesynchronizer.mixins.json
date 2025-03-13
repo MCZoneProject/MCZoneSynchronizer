@@ -1,0 +1,15 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "kr.cosine.mczone.synchronizer.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "refmap": "mczonesynchronizer.refmap.json",
+  "mixins": [
+    "PlayerListMixin",
+    "PlayerMixin"
+  ],
+  "client": [],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

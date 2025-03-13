@@ -1,0 +1,10 @@
+modLoader="javafml"
+loaderVersion="[44,)"
+license="All Rights Reserved"
+
+[[mods]]
+modId="mczonesynchronizer"
+version="1.0.0"
+displayName="MCZoneSynchronizer"
+authors="Cosine_A"
+description="전쟁중 플레이어 데이터 동기화 모드"
