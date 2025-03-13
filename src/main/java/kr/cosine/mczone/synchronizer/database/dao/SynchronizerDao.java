@@ -3,7 +3,9 @@ package kr.cosine.mczone.synchronizer.database.dao;
 import kr.cosine.mczone.synchronizer.database.DataSource;
 import kr.cosine.mczone.synchronizer.util.InventorySerializer;
 import net.minecraft.nbt.ListTag;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 
 import java.sql.SQLException;
 import java.util.UUID;
@@ -60,7 +62,9 @@ public class SynchronizerDao {
                 var preparedStatement = connection.prepareStatement(query)
             ) {
                 preparedStatement.setString(1, player.getStringUUID());
-                preparedStatement.setBytes(2, InventorySerializer.toCompressed(player.getInventory()));
+                var inventory = player.getInventory();
+                player.setItemSlot(EquipmentSlot.OFFHAND, ItemStack.EMPTY);
+                preparedStatement.setBytes(2, InventorySerializer.toCompressed(inventory));
                 preparedStatement.executeUpdate();
             } catch (SQLException e) {
                 e.printStackTrace();
