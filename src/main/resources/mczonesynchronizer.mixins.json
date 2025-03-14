@@ -5,8 +5,11 @@
   "compatibilityLevel": "JAVA_17",
   "refmap": "mczonesynchronizer.refmap.json",
   "mixins": [
+    "FoodDataMixin",
+    "LivingEntityMixin",
     "PlayerListMixin",
-    "PlayerMixin"
+    "PlayerMixin",
+    "ServerPlayerGameModeAccessor"
   ],
   "client": [],
   "injectors": {

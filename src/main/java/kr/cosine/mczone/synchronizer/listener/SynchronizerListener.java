@@ -3,6 +3,7 @@ package kr.cosine.mczone.synchronizer.listener;
 import kr.cosine.mczone.synchronizer.MCZoneSynchronizer;
 import kr.cosine.mczone.synchronizer.database.DataSource;
 import kr.cosine.mczone.synchronizer.database.dao.SynchronizerDao;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.server.ServerStartingEvent;
@@ -25,7 +26,8 @@ public class SynchronizerListener {
 
     @SubscribeEvent
     public static void onPlayerLoggedOut(PlayerEvent.PlayerLoggedOutEvent event) {
-        var player = event.getEntity();
-        SynchronizerDao.setInventory(player);
+        if (event.getEntity() instanceof ServerPlayer player) {
+            SynchronizerDao.set(player);
+        }
     }
 }
