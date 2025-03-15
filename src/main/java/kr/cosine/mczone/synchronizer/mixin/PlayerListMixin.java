@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class PlayerListMixin {
     @Inject(method = "placeNewPlayer", at = @At("HEAD"))
     public void placeNewPlayer(Connection connection, ServerPlayer player, CallbackInfo callbackInfo) {
-        SynchronizerDao.find(player.getUUID()).thenAccept((synchronizerVo) -> {
+        SynchronizerDao.findByUniqueId(player.getUUID()).thenAccept((synchronizerVo) -> {
             if (synchronizerVo == null) return;
             SynchronizerService.sync(player, synchronizerVo);
         });

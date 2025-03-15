@@ -8,7 +8,9 @@ import java.util.Collections;
 import java.util.List;
 
 public class SynchronizerVo {
-    private static final SynchronizerVo DEFAULT_INSTANCE = new SynchronizerVo(100f, 100f, new ListTag(), 0, Collections.emptyList(), GameType.SURVIVAL.getId());
+    public static float DEFAULT_HEALTH = 100f;
+
+    private static final SynchronizerVo DEFAULT_INSTANCE = new SynchronizerVo(DEFAULT_HEALTH, DEFAULT_HEALTH, new ListTag(), 0, Collections.emptyList(), GameType.SURVIVAL.getId());
 
     public static SynchronizerVo getDefaultInstance() {
         return DEFAULT_INSTANCE;

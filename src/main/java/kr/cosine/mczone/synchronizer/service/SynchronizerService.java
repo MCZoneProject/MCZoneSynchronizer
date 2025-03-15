@@ -8,10 +8,7 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 public class SynchronizerService {
     public static void sync(ServerPlayer player, SynchronizerVo synchronizerVo) {
         var maxHealth = synchronizerVo.getMaxHealth();
-        var maxHealthAttribute = player.getAttribute(Attributes.MAX_HEALTH);
-        if (maxHealthAttribute != null) {
-            maxHealthAttribute.setBaseValue(maxHealth);
-        }
+        setMaxHealth(player, maxHealth);
 
         var health = synchronizerVo.getHealth();
         player.setHealth(health);
@@ -30,5 +27,12 @@ public class SynchronizerService {
 
         var gameMode = synchronizerVo.getGameMode();
         ((ServerPlayerGameModeAccessor) player.gameMode).invokeSetGameModeForPlayer(gameMode, null);
+    }
+
+    public static void setMaxHealth(ServerPlayer player, float maxHealth) {
+        var maxHealthAttribute = player.getAttribute(Attributes.MAX_HEALTH);
+        if (maxHealthAttribute != null) {
+            maxHealthAttribute.setBaseValue(maxHealth);
+        }
     }
 }

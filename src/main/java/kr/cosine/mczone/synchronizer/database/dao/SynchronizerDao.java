@@ -37,7 +37,7 @@ public class SynchronizerDao {
         }
     }
 
-    public static CompletableFuture<SynchronizerVo> find(UUID owner) {
+    public static CompletableFuture<SynchronizerVo> findByUniqueId(UUID owner) {
         return CompletableFuture.supplyAsync(() -> {
             var query = "SELECT * FROM mczone_synchronizer WHERE owner = ?";
             try (
@@ -66,7 +66,7 @@ public class SynchronizerDao {
         }, EXECUTOR_SERVICE);
     }
 
-    public static void set(ServerPlayer player) {
+    public static void save(ServerPlayer player) {
         var playerUniqueId = player.getStringUUID();
         var playerHealth = player.getHealth();
         var playerMaxHealth = player.getMaxHealth();
@@ -76,30 +76,32 @@ public class SynchronizerDao {
         var mobEffects = player.getActiveEffects();
         var compressedMobEffects = MobEffectSerializer.toCompressed(mobEffects);
         var gameMode = player.gameMode.getGameModeForPlayer().getId();
-        CompletableFuture.runAsync(() -> {
-            var query = "INSERT INTO mczone_synchronizer (owner, health, max_health, inventory, held_item_slot, effect, game_mode) VALUES (?, ?, ?, ?, ?, ?, ?) " +
-                "ON DUPLICATE KEY UPDATE " +
-                "health = VALUES(health), " +
-                "max_health = VALUES(max_health), " +
-                "inventory = VALUES(inventory), " +
-                "held_item_slot = VALUES(held_item_slot), " +
-                "effect = VALUES(effect), " +
-                "game_mode = VALUES(game_mode)";
-            try (
-                var connection = DataSource.getConnection();
-                var preparedStatement = connection.prepareStatement(query)
-            ) {
-                preparedStatement.setString(1, playerUniqueId);
-                preparedStatement.setFloat(2, playerHealth);
-                preparedStatement.setFloat(3, playerMaxHealth);
-                preparedStatement.setBytes(4, compressedInventory);
-                preparedStatement.setInt(5, inventory.selected);
-                preparedStatement.setBytes(6, compressedMobEffects);
-                preparedStatement.setInt(7, gameMode);
-                preparedStatement.executeUpdate();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }, EXECUTOR_SERVICE);
+        var query = "INSERT INTO mczone_synchronizer (owner, health, max_health, inventory, held_item_slot, effect, game_mode) VALUES (?, ?, ?, ?, ?, ?, ?) " +
+            "ON DUPLICATE KEY UPDATE " +
+            "health = VALUES(health), " +
+            "max_health = VALUES(max_health), " +
+            "inventory = VALUES(inventory), " +
+            "held_item_slot = VALUES(held_item_slot), " +
+            "effect = VALUES(effect), " +
+            "game_mode = VALUES(game_mode)";
+        try (
+            var connection = DataSource.getConnection();
+            var preparedStatement = connection.prepareStatement(query)
+        ) {
+            preparedStatement.setString(1, playerUniqueId);
+            preparedStatement.setFloat(2, playerHealth);
+            preparedStatement.setFloat(3, playerMaxHealth);
+            preparedStatement.setBytes(4, compressedInventory);
+            preparedStatement.setInt(5, inventory.selected);
+            preparedStatement.setBytes(6, compressedMobEffects);
+            preparedStatement.setInt(7, gameMode);
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void saveAsync(ServerPlayer player) {
+        CompletableFuture.runAsync(() -> save(player), EXECUTOR_SERVICE);
     }
 }
