@@ -24,8 +24,7 @@ public class SynchronizerDao {
             "max_health FLOAT NOT NULL DEFAULT 100, " +
             "inventory BLOB NOT NULL, " +
             "held_item_slot TINYINT NOT NULL DEFAULT 0, " +
-            "effect BLOB NOT NULL, " +
-            "game_mode TINYINT NOT NULL DEFAULT 0" +
+            "effect BLOB NOT NULL" +
             ") DEFAULT CHARSET=utf8mb4";
         try (
             var connection = DataSource.getConnection();
@@ -54,8 +53,7 @@ public class SynchronizerDao {
                     var heldItemSlot = resultSet.getInt("held_item_slot");
                     var compressedMobEffects = resultSet.getBytes("effect");
                     var mobEffects = MobEffectSerializer.toDecompressed(compressedMobEffects);
-                    var gameModeId = resultSet.getInt("game_mode");
-                    return new SynchronizerVo(health, maxHealth, inventory, heldItemSlot, mobEffects, gameModeId);
+                    return new SynchronizerVo(health, maxHealth, inventory, heldItemSlot, mobEffects);
                 } else {
                     return SynchronizerVo.getDefaultInstance();
                 }
@@ -75,15 +73,13 @@ public class SynchronizerDao {
         var compressedInventory = InventorySerializer.toCompressed(inventory);
         var mobEffects = player.getActiveEffects();
         var compressedMobEffects = MobEffectSerializer.toCompressed(mobEffects);
-        var gameMode = player.gameMode.getGameModeForPlayer().getId();
-        var query = "INSERT INTO mczone_synchronizer (owner, health, max_health, inventory, held_item_slot, effect, game_mode) VALUES (?, ?, ?, ?, ?, ?, ?) " +
+        var query = "INSERT INTO mczone_synchronizer (owner, health, max_health, inventory, held_item_slot, effect) VALUES (?, ?, ?, ?, ?, ?) " +
             "ON DUPLICATE KEY UPDATE " +
             "health = VALUES(health), " +
             "max_health = VALUES(max_health), " +
             "inventory = VALUES(inventory), " +
             "held_item_slot = VALUES(held_item_slot), " +
-            "effect = VALUES(effect), " +
-            "game_mode = VALUES(game_mode)";
+            "effect = VALUES(effect)";
         try (
             var connection = DataSource.getConnection();
             var preparedStatement = connection.prepareStatement(query)
@@ -94,7 +90,6 @@ public class SynchronizerDao {
             preparedStatement.setBytes(4, compressedInventory);
             preparedStatement.setInt(5, inventory.selected);
             preparedStatement.setBytes(6, compressedMobEffects);
-            preparedStatement.setInt(7, gameMode);
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();

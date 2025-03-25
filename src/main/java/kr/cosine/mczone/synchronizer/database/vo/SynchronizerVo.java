@@ -2,7 +2,6 @@ package kr.cosine.mczone.synchronizer.database.vo;
 
 import net.minecraft.nbt.ListTag;
 import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.level.GameType;
 
 import java.util.Collections;
 import java.util.List;
@@ -10,7 +9,7 @@ import java.util.List;
 public class SynchronizerVo {
     public static float DEFAULT_HEALTH = 100f;
 
-    private static final SynchronizerVo DEFAULT_INSTANCE = new SynchronizerVo(DEFAULT_HEALTH, DEFAULT_HEALTH, new ListTag(), 0, Collections.emptyList(), GameType.SURVIVAL.getId());
+    private static final SynchronizerVo DEFAULT_INSTANCE = new SynchronizerVo(DEFAULT_HEALTH, DEFAULT_HEALTH, new ListTag(), 0, Collections.emptyList());
 
     public static SynchronizerVo getDefaultInstance() {
         return DEFAULT_INSTANCE;
@@ -26,15 +25,12 @@ public class SynchronizerVo {
 
     private List<MobEffectInstance> mobEffects;
 
-    private GameType gameMode;
-
-    public SynchronizerVo(float health, float maxHealth, ListTag inventory, int heldItemSlot, List<MobEffectInstance> mobEffects, int gameModeId) {
+    public SynchronizerVo(float health, float maxHealth, ListTag inventory, int heldItemSlot, List<MobEffectInstance> mobEffects) {
         this.health = health;
         this.maxHealth = maxHealth;
         this.inventory = inventory;
         this.heldItemSlot = heldItemSlot;
         this.mobEffects = mobEffects;
-        this.gameMode = GameType.byId(gameModeId);
     }
 
     public float getHealth() {
@@ -55,9 +51,5 @@ public class SynchronizerVo {
 
     public List<MobEffectInstance> getMobEffects() {
         return mobEffects;
-    }
-
-    public GameType getGameMode() {
-        return gameMode;
     }
 }

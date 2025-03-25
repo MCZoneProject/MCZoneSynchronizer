@@ -23,39 +23,21 @@ public class MobEffectSerializer {
             listTag.add(mobEffectCompoundTag);
         }
         compoundTag.put(MOB_EFFECT_KEY, listTag);
-        try (
-            var byteArrayOutputStream = new ByteArrayOutputStream();
-            var dataOutputStream = new DataOutputStream(byteArrayOutputStream)
-        ) {
-            NbtIo.writeCompressed(compoundTag, dataOutputStream);
-            var byteArray = byteArrayOutputStream.toByteArray();
-            return ByteArraySerializer.toCompressedByteArray(byteArray);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
+        return CompoundTagSerializer.toCompressed(compoundTag);
     }
 
     public static List<MobEffectInstance> toDecompressed(byte[] compressedByteArray) {
-        var byteArray = ByteArraySerializer.toDecompressedByteArray(compressedByteArray);
-        try (
-            var byteArrayInputStream = new ByteArrayInputStream(byteArray);
-            var dataInputStream = new DataInputStream(byteArrayInputStream)
-        ) {
-            var compoundTag = NbtIo.readCompressed(dataInputStream);
-            var listTag = compoundTag.getList(MOB_EFFECT_KEY, Tag.TAG_COMPOUND);
-            var mobEffects = new ArrayList<MobEffectInstance>();
-            for (int i = 0; i < listTag.size(); ++i) {
-                var mobEffectCompoundTag = listTag.getCompound(i);
-                var mobEffectInstance = MobEffectInstance.load(mobEffectCompoundTag);
-                if (mobEffectInstance != null) {
-                    mobEffects.add(mobEffectInstance);
-                }
+        var compoundTag = CompoundTagSerializer.toDecompressed(compressedByteArray);
+        if (compoundTag == null) return null;
+        var listTag = compoundTag.getList(MOB_EFFECT_KEY, Tag.TAG_COMPOUND);
+        var mobEffects = new ArrayList<MobEffectInstance>();
+        for (int i = 0; i < listTag.size(); ++i) {
+            var mobEffectCompoundTag = listTag.getCompound(i);
+            var mobEffectInstance = MobEffectInstance.load(mobEffectCompoundTag);
+            if (mobEffectInstance != null) {
+                mobEffects.add(mobEffectInstance);
             }
-            return mobEffects;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
         }
+        return mobEffects;
     }
 }
